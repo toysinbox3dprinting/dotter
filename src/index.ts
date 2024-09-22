@@ -10,9 +10,19 @@ import { kdTree } from 'kd-tree-javascript';
 
 // @ts-ignore
 import cactus_path from 'url:./assets/cactus_reference.png';
+
+// THREE.js IMPORTS
 import * as THREE from 'three';
 // @ts-ignore
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+// @ts-ignore
+import { OBJExporter } from 'three/examples/jsm/exporters/OBJExporter';
+// @ts-ignore
+import { STLExporter } from 'three/examples/jsm/exporters/STLExporter';
+// @ts-ignore
+import { PLYExporter } from 'three/examples/jsm/exporters/PLYExporter';
+
+
 import { generate_3d_mesh } from "./generate_3d_mesh";
 
 const root_path = '/dotter/';
@@ -32,7 +42,8 @@ background_image.attach_node(background_image_node);
 visual_objects.push(background_image)
 
 // MEASUREMENTS
-export const TRUE_RING_RADIUS = 105 * 0.5; // mm
+export const INNER_RING_RADIUS = 100 * 0.5; // mm
+export const OUTER_RING_RADIUS = 105 * 0.5; // mm
 export enum HoleSize { S, M, L};
 export const hole_size_lookup = {
     [HoleSize.S]: 2,
@@ -47,6 +58,11 @@ const hole_color_lookup = {
 
 enum ExportFormat { STL, OBJ, PLY};
 let selected_export_format: ExportFormat = ExportFormat.STL;
+const file_ending_lookup = {
+    [ExportFormat.STL]: 'stl',
+    [ExportFormat.OBJ]: 'obj',
+    [ExportFormat.PLY]: 'ply',
+}
 
 // REACTIONS
 let uuid_global_window_resize = reaction_manager.addReaction(new GlobalReaction(ReactionType.GlobalResize, 'global_window_resize', define_and_execute_once(() => {
@@ -116,7 +132,7 @@ const create_dot = (cx: number, cy: number, hole_size: HoleSize, from_click: boo
         dot.data.cy = cy;
         dot_node.setAttribute('cx', `${cx}`);
         dot_node.setAttribute('cy', `${cy}`);
-        const r = hole_size_lookup[dot.data.hole_size] * 0.5 / TRUE_RING_RADIUS * compute_ring_radius();
+        const r = hole_size_lookup[dot.data.hole_size] * 0.5 / INNER_RING_RADIUS * compute_ring_radius();
         dot.data.computed_r = r;
         dot_node.setAttribute('rx', `${r}`);
         dot_node.setAttribute('ry', `${r}`);
@@ -417,7 +433,7 @@ button_check_dot_distances.addEventListener('click', () => {
     }, ["x", "y", "r"]);
 
     // 1mm gap, different radii accounted for kd-tree distance metric
-    const max_dist_pow2 = 1 / TRUE_RING_RADIUS * compute_ring_radius();
+    const max_dist_pow2 = 1 / INNER_RING_RADIUS * compute_ring_radius();
     dots.forEach(dot => {
         if(!dot.data.uuid_recolor_reaction) throw Error("Dot missing uuid_recolor_reaction");
         const point = {
@@ -445,7 +461,12 @@ el_dot_size_form.addEventListener('change', () => {
 const button_download_svg = document.getElementById('button_download_svg') as HTMLButtonElement;
 const button_download_3d = document.getElementById('button_download_3d') as HTMLButtonElement;
 button_download_3d.addEventListener('click', () => {
-    generate_3d_mesh(dots);
+    const result = generate_3d_mesh(dots);
+    const exporter = new (selected_export_format === ExportFormat.STL ? 
+        STLExporter : selected_export_format === ExportFormat.OBJ ? 
+        OBJExporter : PLYExporter)();
+    const data = exporter.parse(result);
+    download_file(`design-${timestamp()}-model.${file_ending_lookup[selected_export_format]}`, data);
 })
 
 // 3d format form
@@ -459,23 +480,22 @@ el_3d_format_form.addEventListener('change', () => {
 });
 
 
-
 // #################################
 // THREE JS PREVIEW
 // #################################
 const el_main_canvas = document.getElementById('main_canvas') as HTMLCanvasElement;
-const scene = new THREE.Scene();
+export const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, el_main_canvas.width / el_main_canvas.height, 0.1, 1000);
-camera.position.set(0, 2, -5);
+camera.position.set(0, 60, 10);
 camera.lookAt(new THREE.Vector3(0, 0, 0));
 const renderer = new THREE.WebGLRenderer({
    canvas: el_main_canvas 
 });
-renderer.setPixelRatio(1.5);
+// renderer.setPixelRatio(1.5);
 renderer.setClearColor(0xffffff);
 const controls = new OrbitControls(camera, renderer.domElement)
 
-const grid = new THREE.GridHelper(20, 20, 0xff0000, 0xaaddff);
+const grid = new THREE.GridHelper(INNER_RING_RADIUS * 3, 20, 0xff0000, 0xaaddff);
 scene.add(grid);
 let uuid_global_three_render = reaction_manager.addReaction(new GlobalReaction(ReactionType.Update, 'global_three_render', define(() => {
     renderer.render(scene, camera);
