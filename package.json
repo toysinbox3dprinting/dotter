@@ -1,0 +1,27 @@
+{
+  "name": "dynamic-ink",
+  "version": "1.0.0",
+  "source": [
+    "./src/index.html"
+  ],
+  "targets": {
+    "default": {
+      "distDir": "./dist/homepage"
+    }
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@types/kd-tree-javascript": "^1.0.3",
+    "@types/three": "^0.168.0",
+    "@types/uuid": "^10.0.0",
+    "kd-tree-javascript": "^1.0.3",
+    "lit": "^3.2.0",
+    "three": "^0.168.0",
+    "uuid": "^10.0.0"
+  }
+}

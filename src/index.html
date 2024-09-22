@@ -1,0 +1,91 @@
+<html>
+    <head>
+        <link rel="stylesheet" href="./style.css">
+        <link rel="stylesheet" href="./params.css">
+    </head>
+    <body>
+        <!-- <div id="fps_counter">0.00 fps</div> -->
+        <div id="main_svg_container">
+            <svg id="main_svg"></svg>
+        </div>
+        <div id="right_column">
+            <div id="meta_buttons_row">
+                <button id="button_save_project">Save Project</button>
+                <button id="button_load_project">Load Project</button>
+                <button id="button_clear_project">Clear Project</button>
+                <div id="copyright">Dotter &copy; 2024 Toysinbox 3D Printing </div>
+                <input type="file" id="project_upload"/>
+            </div>
+
+            <canvas id="main_canvas"></canvas>
+
+            <div id="params_container">
+                <div id="params_container_column">
+                    <h2>1. Add reference</h2>
+                    <input type="file" id="image_upload" accept="image/png, image/jpeg" />
+                    <div class="v_space_0_25_rem"></div>
+                    <button id="button_upload_image">Upload Image</button>
+                    <img id="image_preview">
+
+                    <!-- <div class="v_space_2_rem"></div> -->
+
+                    <div class="flex_horizontal">
+                        <label class="slider_label" for="image_ds">Image Scale:</label>
+                        <input class="slider_input" type="range" id="image_ds" min="0.5" max="1.5" value="1" step="0.01"/>
+                    </div>
+                    <div class="flex_horizontal">
+                        <label class="slider_label" for="image_dx">Image X Offset:</label>
+                        <input class="slider_input" type="range" id="image_dx" min="-1" max="1" value="0" step="0.01"/>
+                    </div>
+                    <div class="flex_horizontal">
+                        <label class="slider_label" for="image_dy">Image Y Offset:</label>
+                        <input class="slider_input" type="range" id="image_dy" min="-1" max="1" value="0" step="0.01"/>
+                    </div>
+                    <div class="flex_horizontal">
+                        <label class="slider_label" for="image_do">Image Opacity:</label>
+                        <input class="slider_input" type="range" id="image_do" min="0" max="1" value="0.5" step="0.01"/>
+                    </div>
+                </div>
+
+                <div id="params_container_column">
+                    <h2>2. Check dots</h2>
+                    <button id="button_check_dot_distances" class="no_margin_top">Check Dot Distances</button>
+
+                    <!-- <div class="v_space_1_rem"></div> -->
+
+                    <div class="flex_horizontal">
+                        <label>Dot Size:</label>
+                        <form id="dot_size_form" class="horizontal_radio_buttons">
+                            <label><input type="radio" name="dot_size" value="S" checked>Small</label>
+                            <br>
+                            <label><input type="radio" name="dot_size" value="M">Medium</label>
+                            <br>
+                            <label><input type="radio" name="dot_size" value="L">Large</label>
+                        </form>
+                    </div>
+
+                    <hr class="line">
+
+                    <!-- <div class="v_space_1_rem"></div> -->
+                    <h2>3. Download design</h2>
+                    <button id="button_download_svg">Download SVG</button>
+                    <button id="button_download_3d">Download 3D Model</button>
+
+                    <!-- <div class="v_space_1_rem"></div> -->
+
+                    <div class="flex_horizontal">
+                        <label for="">Export File Format:</label>
+                        <form id="export_format_form" class="horizontal_radio_buttons">
+                            <label><input type="radio" name="3d_format" value="STL" checked>STL</label>
+                            <br>
+                            <label><input type="radio" name="3d_format" value="OBJ">OBJ</label>
+                            <br>
+                            <label><input type="radio" name="3d_format" value="PLY">PLY</label>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script src="./index.ts" type="module"></script>
+    </body>
+</html>
