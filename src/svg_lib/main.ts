@@ -12,7 +12,7 @@ export let CANVAS_WIDTH = 1080;
 export let CANVAS_HEIGHT = 720;
 export let set_CANVAS_WIDTH = (w: number) => CANVAS_WIDTH = w;
 export let set_CANVAS_HEIGHT = (h: number) => CANVAS_HEIGHT = h;
-export const FPS = 60;
+export const FPS = 30;
 
 export const el_fps_counter = document.getElementById('fps_counter') as HTMLDivElement;
 export const el_svg = document.getElementById('main_svg') as HTMLElement & SVGSVGElement;
@@ -39,7 +39,7 @@ window.globalThis.main_loop = setInterval(() => {
         reaction.trigger(delta_time, eta_time);
     }
 
-    console.log(reaction_manager.reaction_collection.length)
+    // console.log(reaction_manager.reaction_collection.length)
 
     old_time = new_time;
 }, 1000 / FPS);

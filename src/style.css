@@ -15,7 +15,9 @@ div {
 #main_svg_container {
     width: 50%;
     height: calc(100% - 2rem);
-    padding: 1rem;
+    margin: 1rem;
+    position: relative;
+    display: flex;
 }
 
 #main_svg {
@@ -24,6 +26,26 @@ div {
     width: 100%;
     height: 100%;
     background-color: white;
+
+    z-index: 0;   
+    display: flex;
+    top: 0;
+    left: 0;
+    position: absolute;
+}
+
+#help_button {
+    width: 3rem;
+    height: 3rem;
+
+    z-index: 100;   
+    display: flex; 
+    top: 0.5rem;
+    right: 0.5rem;
+    position: absolute;
+
+    cursor: pointer;
+    
 }
 
 #right_column {
@@ -79,5 +101,9 @@ div {
 }
 
 button {
+    cursor: pointer;
+}
+
+svg ellipse {
     cursor: pointer;
 }

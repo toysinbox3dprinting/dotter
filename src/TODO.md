@@ -1,8 +1,11 @@
-* Add tutorial / help
+* Add image file to save/load project file
+* Add tooltips + popup warnings
+
 * Add login
 
-* Better THREE.js wireframe
-* Live update the export (hot swap the THREE.js model)
+<!-- * Live update the export (hot swap the THREE.js model) -->
+<!-- * Export with Z up instead of Y up -->
+<!-- * Add SVG export -->
+<!-- * Add tutorial / help -->
 
-* Export with Z up instead of Y up
-* Add SVG export
+* Better THREE.js wireframe

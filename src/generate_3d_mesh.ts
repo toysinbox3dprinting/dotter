@@ -5,18 +5,22 @@ import * as THREE from 'three';
 import earcut from 'earcut';
 // @ts-ignore
 import { MeshLine, MeshLineMaterial, MeshLineRaycast } from 'three.meshline';
+import { CANVAS_HEIGHT, CANVAS_WIDTH } from "./svg_lib/main";
 
 const HOLE_RESOLUTION = 16;
 const DISK_RESOLUTION = 64;
 const DISK_THICKNESS = 2.5;
 const DISK_BORDER_THICKNESS = 3;
 
+let view_object: THREE.Mesh | undefined = undefined;
+let view_outline_object: THREE.LineSegments | undefined = undefined;
+
 export const generate_3d_mesh = (dots: Entity<DotData, any>[]) => {
     const points = dots.map(dot => [
         dot.data.r * INNER_RING_RADIUS * Math.cos(dot.data.phi),
         dot.data.r * INNER_RING_RADIUS * Math.sin(dot.data.phi),
         hole_size_lookup[dot.data.hole_size] * 0.5
-    ]);
+    ]).filter(triplet => Math.sqrt(triplet[0] ** 2 + triplet[1] ** 2) + triplet[2] < INNER_RING_RADIUS);
     points.push([0, -INNER_RING_RADIUS * 0.75, 3]);
     const vertices: number[][] = [];
     const indices: number[] = [];
@@ -219,15 +223,34 @@ export const view_indexed_triangle = (
         data.vertices.map(v => v.to_THREE()).flat()
     ), 3));
     geometry.setIndex(data.indices);
-    const material = new THREE.MeshBasicMaterial({
-        color: color
-    });
-    const mesh = new THREE.Mesh(geometry, material);
-    scene.add(mesh);
-
     const edges = new THREE.EdgesGeometry(geometry, 30); 
-    const line = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({ color: 0xffaa00 })); 
-    scene.add(line);
 
-    return mesh;
+    if(view_object === undefined && view_outline_object === undefined){
+        const material = new THREE.MeshBasicMaterial({
+            color: color
+        });
+        const mesh = new THREE.Mesh(geometry, material);
+        scene.add(mesh);
+        const lines = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({ color: 0xffaa00 })); 
+        // const lines = new MeshLine();
+        // lines.setGeometry(edges);
+        // const line_material = new MeshLineMaterial({
+        //     resolution: new THREE.Vector2(CANVAS_WIDTH, CANVAS_HEIGHT)
+        // });
+        // const lines_mesh = new THREE.Mesh(lines, line_material);
+
+        // scene.add(lines_mesh);
+        scene.add(lines);
+        view_object = mesh;
+        view_outline_object = lines;
+    }
+
+    else {
+        (view_object as THREE.Mesh).geometry = geometry;
+        (view_outline_object as THREE.LineSegments).geometry = edges;
+
+        // (view_outline_object as MeshLine).setGeometry(edges);
+    }
+
+    return view_object as THREE.Mesh;
 }

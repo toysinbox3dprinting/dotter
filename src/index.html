@@ -2,10 +2,158 @@
     <head>
         <link rel="stylesheet" href="./style.css">
         <link rel="stylesheet" href="./params.css">
+        <link rel="stylesheet" href="./dialog.css">
+
+        <link rel="stylesheet" href="../node_modules/@glidejs/glide/dist/css/glide.core.min.css">
+        <link rel="stylesheet" href="../node_modules/@glidejs/glide/dist/css/glide.theme.min.css">
+        <script src="../node_modules/@glidejs/glide/dist/glide.min.js"></script>
     </head>
     <body>
+        <div id="tutorial_dialog">
+            <div id="tutorial_dialog_inner">
+                <img id="close_tutorial_dialog_button" src="./assets/close_circle.svg" draggable="false">
+                <h1>Dotter Tutorial</h1>
+
+                <div class="glide">
+                <div class="glide__track" data-glide-el="track">
+                <ul class="glide__slides">
+
+                <div id="tutorial_stage_0" class="glide__slide">
+                    <h3>What is Dotter?</h3>
+                    <p>
+                        Dotter lets you create 3D printed embroidery designs from a reference image or sketch!
+                        In the following images, we started from (1) a <b>sketch</b> and used dotter to make 
+                        (2) a <b>3D model</b> which we finally (3) <b>3D printed</b> and embroidered.
+                        <br><br>
+                        You can make cool fiber art too!
+                    </p>
+
+                    <div class="tutorial_1_imgrow">
+                        <div class="tutorial_1_imgcontainer">
+                            <img class="tutorial_1_img" src="./assets/plant_in_pot_reference.jpg">
+                            <p>(1) Sketch</p>
+                        </div>
+                        <div class="tutorial_1_imgcontainer">
+                            <img class="tutorial_1_img" src="./assets/plant_in_pot_design2.jpg">
+                            <p>(2) 3D design</p>
+                        </div>
+                        <div class="tutorial_1_imgcontainer">
+                            <img class="tutorial_1_img" src="./assets/plant_in_pot_printed.jpg">
+                            <p>(3) 3D printed embroidery</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="tutorial_stage_1" class="glide__slide">
+                    <h3>1. Upload your reference image</h3>
+                    <p>
+                        You need an image file (.PNG, .JPEG) to start, such as this example cactus in (1). 
+                        This is your reference for making your 3D printed embroidery design. 
+                        Use the sliders reposition and resize the reference until
+                        you are happy with how it lines up with the hoop! Look at the video in (2) for reference.
+                    </p>
+
+                    <div class="tutorial_1_imgrow">
+                        <div class="tutorial_2_imgcontainer">
+                            <img class="tutorial_2_img" src="./assets/cactus_reference.jpg">
+                            <p>(1) Sketch reference</p>
+                        </div>
+                        <div class="tutorial_2_imgcontainer">
+                            <video class="tutorial_2_vid" src="./assets/how_to_adjust_image.mp4" controls></video>
+                            <p>(2) How to adjust sketch reference position</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="tutorial_stage_2" class="glide__slide">
+                    <h3>2. Add and remove dots for embroidery</h3>
+                    <p>
+                        To add dots, use <B>LEFT CLICK</B> on the reference. To delete a dot, use <B>RIGHT CLICK</B>
+                        on that dot. You can move dots around by dragging them (i.e. <B>LEFT CLICK + DRAG</B>). 
+                        Look at the video in (1) for reference.
+                        <br><br>
+                        If you have many threads passing through a hole, the small dot (red) is not large enough. 
+                        You can change the hole size to medium (orange) and large (green) as well. A rule of thumb is small dot
+                        is good for <b>1-4</b> threads through a hole, medium dot is good for <b>5-6</b> threads through a hole, 
+                        and large dot is good for anything more. 
+                        Be sure that dots aren't too close to each other with the "<b>Check Dot Distances</b>" button!
+                        These options are in the menu shown in (2).
+                    </p>
+
+                    <div class="tutorial_1_imgrow">
+                        <div class="tutorial_2_imgcontainer">
+                            <video class="tutorial_3_vid" src="./assets/how_to_add_remove_dots.mp4" controls></video>
+                            <p>(1) How to add, move, and remove dots</p>
+                        </div>
+                        <div class="tutorial_2_imgcontainer">
+                            <img class="tutorial_3_img" src="./assets/check_dots_dot_size.jpg">
+                            <p>(2) Dot size menu and dot distance button</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="tutorial_stage_3" class="glide__slide">
+                    <h3>3. Download your design for making!</h3>
+                    <p>
+                        Once you are finished, you can download your design for making! If you are 3D printing your
+                        design, then click the "<b>Download 3D Model</b>" button. You can choose the export file format too,
+                        but the default STL works great. For reference, the design dimensions should be 105mm x 105mm.
+                        <br><br>
+                        If you are laser cutting, paper cutting (i.e. Cricut), or pen plotting, then click the
+                        "<b>Download SVG Model</b>" button. This will give you an SVG file with millimeter units.
+                        For reference, the design dimensions should be 100mm x 100mm.
+                    </p>
+
+                    <div class="tutorial_1_imgrow">
+                        <div class="tutorial_2_imgcontainer">
+                            <img class="tutorial_4a_img" src="./assets/download_menu.jpg">
+                            <p>(1) Download menu</p>
+                        </div>
+                        <div class="tutorial_2_imgcontainer">
+                            <img class="tutorial_4b_img" src="./assets/plant_in_pot_design2.jpg">
+                            <p>(2) An example downloaded 3D design</p>
+                        </div>
+                        <div class="tutorial_2_imgcontainer">
+                            <img class="tutorial_4b_img" src="./assets/plant_in_pot_designsvg.png">
+                            <p>(3) An example downloaded SVG (2D) design</p>
+                        </div>
+                    </div>
+                </div>
+
+                </ul>
+                </div>
+                
+                <div class="glide__arrows" data-glide-el="controls">
+                    <button class="glide__arrow glide__arrow--left" data-glide-dir="<">prev</button>
+                    <button class="glide__arrow glide__arrow--right" data-glide-dir=">">next</button>
+                  </div>
+                <div class="glide__bullets" data-glide-el="controls[nav]">
+                    <button class="glide__bullet" data-glide-dir="=0"></button>
+                    <button class="glide__bullet" data-glide-dir="=1"></button>
+                    <button class="glide__bullet" data-glide-dir="=2"></button>
+                    <button class="glide__bullet" data-glide-dir="=3"></button>
+                </div>
+                </div>
+
+                <script>
+                    // const glide = new Glide('.glide', {
+                    //     rewind: true,
+                    //     startAt: 3
+                    // }).mount();
+                    // glide.on('move', (a) => {
+                    //     if(glide.index === 0){
+                    //         const el_dialog = document.getElementById('tutorial_dialog');
+                    //         el_dialog.style.display = 'none';
+                    //     }
+                    //     console.log(a, glide.index)
+                    // });
+                </script>
+            </div>
+        </div>
+
         <!-- <div id="fps_counter">0.00 fps</div> -->
         <div id="main_svg_container">
+            <img id="help_button" src="./assets/help_button.svg" draggable="false">
             <svg id="main_svg"></svg>
         </div>
         <div id="right_column">
@@ -48,7 +196,7 @@
                 </div>
 
                 <div id="params_container_column">
-                    <h2>2. Check dots</h2>
+                    <h2>2. Add dots</h2>
                     <button id="button_check_dot_distances" class="no_margin_top">Check Dot Distances</button>
 
                     <!-- <div class="v_space_1_rem"></div> -->

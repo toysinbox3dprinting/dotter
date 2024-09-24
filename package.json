@@ -6,17 +6,19 @@
   ],
   "targets": {
     "default": {
-      "distDir": "./dist/homepage"
+      "distDir": "./apps/dotter"
     }
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "rm -rf .parcel-cache && parcel build './src/index.html' --public-url /apps/dotter --no-scope-hoist"
   },
   "author": "",
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@glidejs/glide": "^3.6.2",
     "@types/earcut": "^2.1.4",
+    "@types/glidejs__glide": "^3.6.5",
     "@types/kd-tree-javascript": "^1.0.3",
     "@types/three": "^0.168.0",
     "@types/uuid": "^10.0.0",

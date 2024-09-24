@@ -4,6 +4,7 @@ import { define, define_and_execute_once } from "./svg_lib/macro";
 import { CANVAS_HEIGHT, CANVAS_WIDTH, el_svg, reaction_manager, set_CANVAS_HEIGHT, set_CANVAS_WIDTH, visual_objects } from "./svg_lib/main";
 import { Entity } from "./svg_lib/object";
 import { GlobalReaction, Reaction, ReactionManager, ReactionType } from "./svg_lib/reaction";
+import Glide from '@glidejs/glide'
 
 import { v4 as uuidv4 } from 'uuid';
 import { kdTree } from 'kd-tree-javascript';
@@ -22,10 +23,10 @@ import { STLExporter } from 'three/examples/jsm/exporters/STLExporter';
 // @ts-ignore
 import { PLYExporter } from 'three/examples/jsm/exporters/PLYExporter';
 
-
 import { generate_3d_mesh } from "./generate_3d_mesh";
 
-const root_path = '/dotter/';
+console.log('hello world!');
+const root_path = '/apps/dotter/';
 
 const compute_ring_radius = () => Math.min(CANVAS_WIDTH, CANVAS_HEIGHT) * 0.5 - 20;
 const compute_r = (cx: number, cy: number) => Math.sqrt(cx*cx + cy*cy) / compute_ring_radius();
@@ -243,7 +244,6 @@ let queue_action = (closure: (callback: () => void) => void) => {
 
     action_processing = true;
     closure(() => {
-        console.log("AH")
         action_processing = false;
         if(most_recent_action != undefined) {
             queue_action(most_recent_action);
@@ -256,8 +256,9 @@ let uuid_global_serialize_layout = reaction_manager.addReaction(new GlobalReacti
     queue_action((callback: () => void) => {
         setTimeout(() => {
             localStorage.setItem("serialized_dots", serialize());
+            generate_3d_mesh(dots);
             callback();
-        }, 100);
+        }, 10);
     });
     layout_to_be_saved = false;
 })));
@@ -370,7 +371,6 @@ if(serialized_image_position !== null) {
         do: _do,
         ds: _ds
     } = JSON.parse(serialized_image_position)
-    console.log(serialized_image_position)
     background_image_dx = _dx;
     background_image_dy = _dy;
     background_image_do = _do;
@@ -460,14 +460,51 @@ el_dot_size_form.addEventListener('change', () => {
 
 const button_download_svg = document.getElementById('button_download_svg') as HTMLButtonElement;
 const button_download_3d = document.getElementById('button_download_3d') as HTMLButtonElement;
+button_download_svg.addEventListener('click', () => {
+    const export_svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    export_svg.setAttribute('width', `${INNER_RING_RADIUS * 2}`);
+    export_svg.setAttribute('height', `${INNER_RING_RADIUS * 2}`);
+    export_svg.setAttribute('viewBox', `0 0 ${INNER_RING_RADIUS * 2} ${INNER_RING_RADIUS * 2}`);
+
+    const points = dots.map(dot => [
+        dot.data.r * INNER_RING_RADIUS * Math.cos(dot.data.phi),
+        dot.data.r * INNER_RING_RADIUS * Math.sin(dot.data.phi),
+        hole_size_lookup[dot.data.hole_size] * 0.5
+    ]);
+    points.forEach(pt => {
+        const export_dot = document.createElementNS('http://www.w3.org/2000/svg', 'ellipse');
+        export_dot.setAttribute('cx', `${INNER_RING_RADIUS + pt[0]}`);
+        export_dot.setAttribute('cy', `${INNER_RING_RADIUS + pt[1]}`);
+        export_dot.setAttribute('rx', `${pt[2]}`);
+        export_dot.setAttribute('ry', `${pt[2]}`);
+        export_dot.setAttribute('fill', `none`);
+        export_dot.setAttribute('stroke', `black`);
+        export_svg.append(export_dot);
+    });
+
+    const export_ring = document.createElementNS('http://www.w3.org/2000/svg', 'ellipse');
+    export_ring.setAttribute('cx', `${INNER_RING_RADIUS}`);
+    export_ring.setAttribute('cy', `${INNER_RING_RADIUS}`);
+    export_ring.setAttribute('rx', `${INNER_RING_RADIUS}`);
+    export_ring.setAttribute('ry', `${INNER_RING_RADIUS}`);
+    export_ring.setAttribute('fill', `none`);
+    export_ring.setAttribute('stroke', `black`);
+    export_svg.append(export_ring);
+
+    const serializer = new XMLSerializer();
+    const data = serializer.serializeToString(export_svg);
+    download_file(`design-${timestamp()}-model.svg`, data);
+});
 button_download_3d.addEventListener('click', () => {
     const result = generate_3d_mesh(dots);
+    result.geometry.rotateX(Math.PI * 0.5); // swap Y up to Z up for export
     const exporter = new (selected_export_format === ExportFormat.STL ? 
         STLExporter : selected_export_format === ExportFormat.OBJ ? 
         OBJExporter : PLYExporter)();
     const data = exporter.parse(result);
     download_file(`design-${timestamp()}-model.${file_ending_lookup[selected_export_format]}`, data);
-})
+    result.geometry.rotateX(-Math.PI * 0.5); // and reset for viewing
+});
 
 // 3d format form
 const el_3d_format_form = document.getElementById('export_format_form') as HTMLFormElement;
@@ -476,7 +513,6 @@ el_3d_format_form.addEventListener('change', () => {
     if(!selected_radio) throw Error("No 3D format size checked");
     const format = selected_radio.getAttribute('value');
     selected_export_format = format === 'STL' ? ExportFormat.STL : format === 'OBJ' ? ExportFormat.OBJ : ExportFormat.PLY;
-    console.log(selected_export_format)
 });
 
 
@@ -500,11 +536,22 @@ scene.add(grid);
 let uuid_global_three_render = reaction_manager.addReaction(new GlobalReaction(ReactionType.Update, 'global_three_render', define(() => {
     renderer.render(scene, camera);
     controls.update();
-})));
+}))); 
+generate_3d_mesh(dots);
 
 // #################################
-// FIX UI SCALING
+// DIALOG LOGIC + FIX UI SCALING
 // #################################
+
+const help_dialog_button = document.getElementById('help_button') as HTMLElement;
+const close_dialog_button = document.getElementById('close_tutorial_dialog_button') as HTMLElement;
+const el_dialog = document.getElementById('tutorial_dialog') as HTMLDivElement;
+help_dialog_button.addEventListener('click', () => {
+    el_dialog.style.visibility = 'visible';
+});
+close_dialog_button.addEventListener('click', () => {
+    el_dialog.style.visibility = 'hidden';
+})
 
 const el_right_column = document.getElementById('right_column') as HTMLDivElement;
 const el_meta_buttons_row = document.getElementById('meta_buttons_row') as HTMLDivElement;
@@ -517,13 +564,21 @@ const on_window_resize = define_and_execute_once(() => {
         - el_params_container.getBoundingClientRect().height
         - 16;
     el_main_canvas.height = proper_width;
-    // el_main_canvas.style.height = `${proper_width}px`;
     el_main_canvas.height = proper_height;
-    // el_main_canvas.style.height = `${proper_height}px`;
-    console.log(el_params_container.getBoundingClientRect().width)
 
     camera.aspect = proper_width / proper_height;
     camera.updateProjectionMatrix();
     renderer.setSize(proper_width, proper_height);
 });
 window.addEventListener('resize', on_window_resize);
+
+const glide = new Glide('.glide', {
+    rewind: true,
+    startAt: 0
+}).mount();
+let at_end = false;
+glide.on('move', () => {
+    if(glide.index === 0 && at_end) el_dialog.style.visibility = 'hidden';
+    at_end = false;
+});
+glide.on('run.end', () => at_end = true);
