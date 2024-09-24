@@ -1,5 +1,7 @@
 * Add image file to save/load project file
 * Add tooltips + popup warnings
+* Add logging interactions
+* Add feedback form
 
 * Add login
 
