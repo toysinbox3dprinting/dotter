@@ -45,7 +45,9 @@ div {
     position: absolute;
 
     cursor: pointer;
-    
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    user-select: none;
 }
 
 #right_column {

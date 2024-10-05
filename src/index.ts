@@ -25,8 +25,8 @@ import { PLYExporter } from 'three/examples/jsm/exporters/PLYExporter';
 
 import { generate_3d_mesh } from "./generate_3d_mesh";
 
-console.log('hello world!');
 const root_path = '/apps/dotter/';
+export let authenticated = false;
 
 const compute_ring_radius = () => Math.min(CANVAS_WIDTH, CANVAS_HEIGHT) * 0.5 - 20;
 const compute_r = (cx: number, cy: number) => Math.sqrt(cx*cx + cy*cy) / compute_ring_radius();
@@ -291,14 +291,17 @@ const el_button_clear_project = document.getElementById("button_clear_project") 
 const el_input_project_upload = document.getElementById("project_upload") as HTMLInputElement;
 
 el_button_save_project.addEventListener('click', () => {
+    if(!authenticated) return;
     const data = serialize();
     download_file(`design-${timestamp()}.dotter`, data);
 });
 
 el_button_load_project.addEventListener('click', () => {
+    if(!authenticated) return;
     el_input_project_upload.click();
 });
 el_input_project_upload.addEventListener('change', async () => {
+    if(!authenticated) return;
     if(!el_input_project_upload.files) throw Error("No files uploaded");
     const file = el_input_project_upload.files[0];
     const serialized_data = await file.text();
@@ -308,6 +311,7 @@ el_input_project_upload.addEventListener('change', async () => {
 });
 
 el_button_clear_project.addEventListener('click', () => {
+    if(!authenticated) return;
     clear_project();
 });
 
@@ -330,6 +334,7 @@ el_image_size_temp.onload = () => {
 }
 
 el_button_upload_image.addEventListener('click', () => {
+    if(!authenticated) return;
     el_input_image_upload.click();
 });
 const cached_image_string = localStorage.getItem('cached_image_string');
@@ -461,6 +466,7 @@ el_dot_size_form.addEventListener('change', () => {
 const button_download_svg = document.getElementById('button_download_svg') as HTMLButtonElement;
 const button_download_3d = document.getElementById('button_download_3d') as HTMLButtonElement;
 button_download_svg.addEventListener('click', () => {
+    if(!authenticated) return;
     const export_svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
     export_svg.setAttribute('width', `${INNER_RING_RADIUS * 2}`);
     export_svg.setAttribute('height', `${INNER_RING_RADIUS * 2}`);
@@ -496,6 +502,7 @@ button_download_svg.addEventListener('click', () => {
     download_file(`design-${timestamp()}-model.svg`, data);
 });
 button_download_3d.addEventListener('click', () => {
+    if(!authenticated) return;
     const result = generate_3d_mesh(dots);
     result.geometry.rotateX(Math.PI * 0.5); // swap Y up to Z up for export
     const exporter = new (selected_export_format === ExportFormat.STL ? 
@@ -551,7 +558,7 @@ help_dialog_button.addEventListener('click', () => {
 });
 close_dialog_button.addEventListener('click', () => {
     el_dialog.style.visibility = 'hidden';
-})
+});
 
 const el_right_column = document.getElementById('right_column') as HTMLDivElement;
 const el_meta_buttons_row = document.getElementById('meta_buttons_row') as HTMLDivElement;
@@ -582,3 +589,86 @@ glide.on('move', () => {
     at_end = false;
 });
 glide.on('run.end', () => at_end = true);
+
+// 
+// LOGIN LOGIC
+//
+
+const login = async (input_username: string, input_password: string) => new Promise<boolean>((resolve, reject) => {
+    // PHASE 1: GET JWT TOKEN
+    fetch('https://kauhentus.com/login', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            username: input_username,
+            password: input_password,
+            service: 'dotter'
+        })
+    }).then(async (res) => {
+        const body = await res.json();
+
+        const success = res.status === 200;
+        if(success){
+            const token = body.token || "";
+
+            // PHASE 2: VALIDATE JWT TOKEN
+            fetch('https://kauhentus.com/validate-login/dotter', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    token: token
+                })
+            }).then(async (res) => {
+                const body = await res.json();
+            
+                const authenticated = res.status === 200;
+                if(authenticated){
+                    resolve(true)
+                } else {
+                    reject(body);
+                }
+            }).catch(async (err) => {
+                reject(err);
+            })
+        } else {
+            reject(body);
+        }
+    }).catch(async (err) => {
+        reject(err);
+    });
+});
+
+const el_login_dialog = document.getElementById('login_dialog') as HTMLDivElement;
+const el_login_form = document.getElementById('login-form') as HTMLFormElement;
+el_login_form.addEventListener('submit', async (ev) => {
+    ev.preventDefault();
+
+    const el_username_input = document.getElementById('username-input') as HTMLInputElement;
+    const username = el_username_input.value;
+    const el_password_input = document.getElementById('password-input') as HTMLInputElement;
+    const password = el_password_input.value;
+
+    const el_login_error_div = document.getElementById('login-error-message') as HTMLDivElement;
+    let error_msg = "";
+    let authentication_success = false;
+    try{
+        authentication_success = await login(username, password);
+    } catch(e){
+        // @ts-ignore
+        if(e.error) error_msg = e.error;
+        else error_msg = "Connection to server failed"
+    }
+    if(authentication_success){
+        el_login_error_div.innerHTML = "&nbsp;";
+        el_login_dialog.style.display = "none";
+        authenticated = true;
+    } else {
+        el_login_error_div.innerHTML = "* " + error_msg;
+    }
+
+    return false;
+});

@@ -1,3 +1,4 @@
+import { authenticated } from "..";
 import { el_svg } from "./main";
 import { Entity } from "./object";
 import { v4 as uuidv4 } from 'uuid';
@@ -37,22 +38,26 @@ export class ReactionManager {
 
     constructor(){
         window.addEventListener('resize', (event) => {
+            if(!authenticated) return;
             this.reaction_collection_global_resize.forEach(reaction => {
                 reaction.trigger(event);
             });
         });
 
         el_svg.addEventListener('mousedown', (event) => {
+            if(!authenticated) return;
             this.reaction_collection_global_mousedown.forEach(reaction => {
                 reaction.trigger(event);
             });
         });
         el_svg.addEventListener('mousemove', (event) => {
+            if(!authenticated) return;
             this.reaction_collection_global_mousemove.forEach(reaction => {
                 reaction.trigger(event);
             });
         });
         el_svg.addEventListener('mouseup', (event) => {
+            if(!authenticated) return;
             this.reaction_collection_global_mouseup.forEach(reaction => {
                 reaction.trigger(event);
             });

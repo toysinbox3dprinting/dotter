@@ -1,5 +1,8 @@
 <html>
     <head>
+        <title>Dotter</title>
+        <link rel="icon" href="./assets/favicon.ico" />
+
         <link rel="stylesheet" href="./style.css">
         <link rel="stylesheet" href="./params.css">
         <link rel="stylesheet" href="./dialog.css">
@@ -9,9 +12,9 @@
         <script src="../node_modules/@glidejs/glide/dist/glide.min.js"></script>
     </head>
     <body>
-        <div id="tutorial_dialog">
-            <div id="tutorial_dialog_inner">
-                <img id="close_tutorial_dialog_button" src="./assets/close_circle.svg" draggable="false">
+        <div id="tutorial_dialog" class="dialog">
+            <div id="tutorial_dialog_inner" class="dialog_inner">
+                <img id="close_tutorial_dialog_button" class="close_dialog_button" src="./assets/close_circle.svg" draggable="false">
                 <h1>Dotter Tutorial</h1>
 
                 <div class="glide">
@@ -134,20 +137,28 @@
                     <button class="glide__bullet" data-glide-dir="=3"></button>
                 </div>
                 </div>
+            </div>
+        </div>
 
-                <script>
-                    // const glide = new Glide('.glide', {
-                    //     rewind: true,
-                    //     startAt: 3
-                    // }).mount();
-                    // glide.on('move', (a) => {
-                    //     if(glide.index === 0){
-                    //         const el_dialog = document.getElementById('tutorial_dialog');
-                    //         el_dialog.style.display = 'none';
-                    //     }
-                    //     console.log(a, glide.index)
-                    // });
-                </script>
+        <div id="login_dialog" class="dialog">
+            <div id="login_dialog_inner" class="dialog_inner">
+                <h1 class="login-header">Login</h1>
+
+                <form id="login-form">
+                    <div class="login-row">
+                        <label for="username-input" class="login-label">Username:</label>
+                        <input id="username-input" autocomplete="username" type="text">
+                    </div>
+
+                    <div class="login-row">
+                        <label for="password-input" class="login-label">Password:</label>
+                        <input id="password-input" autocomplete="current-password" type="password">
+                    </div>
+
+                    <button type="submit" class="login-button">Login</button>
+
+                    <div id="login-error-message">&nbsp;</div>
+                </form>
             </div>
         </div>
 
@@ -222,7 +233,7 @@
                     <!-- <div class="v_space_1_rem"></div> -->
 
                     <div class="flex_horizontal">
-                        <label for="">Export File Format:</label>
+                        <label>Export File Format:</label>
                         <form id="export_format_form" class="horizontal_radio_buttons">
                             <label><input type="radio" name="3d_format" value="STL" checked>STL</label>
                             <br>

@@ -21,7 +21,7 @@ export const generate_3d_mesh = (dots: Entity<DotData, any>[]) => {
         dot.data.r * INNER_RING_RADIUS * Math.sin(dot.data.phi),
         hole_size_lookup[dot.data.hole_size] * 0.5
     ]).filter(triplet => Math.sqrt(triplet[0] ** 2 + triplet[1] ** 2) + triplet[2] < INNER_RING_RADIUS);
-    points.push([0, -INNER_RING_RADIUS * 0.75, 3]);
+    points.push([0, -INNER_RING_RADIUS * 0.9, 3]);
     const vertices: number[][] = [];
     const indices: number[] = [];
 
